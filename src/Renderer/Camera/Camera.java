@@ -1,23 +1,37 @@
 package Renderer.Camera;
 
-import Renderer.Window;
 import org.joml.Matrix4f;
 
 public class Camera {
 
-    private final float FOV = (float)Math.toRadians(60.0f);
-    private final float zNear = 0.01f;
-    private final float zFar = 1000.0f;
+    private float fov;
+    private float zNear;
+    private float zFar;
     private Matrix4f projectionMatrix;
-
     private float aspectRatio;
 
-    public Camera() {
-        this.aspectRatio = (float) Window.getInstance().getWidth() / Window.getInstance().getHeight();
-        projectionMatrix = new Matrix4f().perspective(FOV, aspectRatio, zNear, zFar);
+    public Camera(float fov, float zNear, float zFar, float aspectRatio) {
+        this.aspectRatio = aspectRatio;
+        this.projectionMatrix = new Matrix4f().perspective(fov, aspectRatio, zNear, zFar);
     }
 
     public Matrix4f getProjectionMatrix() {
         return projectionMatrix;
+    }
+
+    public float getFov() {
+        return fov;
+    }
+
+    public float getzNear() {
+        return zNear;
+    }
+
+    public float getzFar() {
+        return zFar;
+    }
+
+    public float getAspectRatio() {
+        return aspectRatio;
     }
 }

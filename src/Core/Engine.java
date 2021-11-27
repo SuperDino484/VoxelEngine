@@ -1,6 +1,7 @@
 package Core;
 
 import Renderer.Camera.Camera;
+import Renderer.MasterRenderer;
 import Renderer.Models.Loader;
 import Renderer.Models.Model;
 import Renderer.Shaders.ShaderProgram;
@@ -15,11 +16,29 @@ import static org.lwjgl.opengl.GL20.*;
 
 public class Engine {
 
+    // Window variables
     private Window window;
     private boolean running = false;
 
+    // Camera variables
+    private Camera camera;
+    private float fov;
+    private float zNear = 0.01f;
+    private float zFar = 1000.0f;
+    private float aspectRatio;
+
+    // Renderer variables
+    private MasterRenderer masterRenderer;
+
     public Engine() {
-        window = Window.createWindow("Voxel Engine", 1920, 1080);
+        this.window = Window.createWindow("Voxel Engine", 1920, 1080);
+
+        this.fov = (float) Math.toRadians(60.0f);
+        this.zNear = 0.01f;
+        this.zFar = 1000.0f;
+        this.aspectRatio = (float) window.getWidth() / window.getHeight();
+        this.camera = new Camera(fov, zNear, zFar, aspectRatio);
+        this.masterRenderer = new MasterRenderer();
     }
 
     public void start() {
@@ -82,7 +101,6 @@ public class Engine {
         shaderCluster.bind();
         shaderCluster.storeUniformLocation("projectionMatrix");
 
-        Camera camera = new Camera();
         shaderCluster.setUniformMat4("projectionMatrix", camera.getProjectionMatrix());
 
         while(!glfwWindowShouldClose(window.getWindowHandle())) {
