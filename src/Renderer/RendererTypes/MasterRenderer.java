@@ -1,8 +1,7 @@
-package Renderer;
+package Renderer.RendererTypes;
 
 import Renderer.Camera.Camera;
 
-import java.util.ArrayList;
 
 public class MasterRenderer {
 

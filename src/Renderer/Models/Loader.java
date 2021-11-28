@@ -1,5 +1,6 @@
 package Renderer.Models;
 
+import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.FloatBuffer;
@@ -9,19 +10,19 @@ import java.util.ArrayList;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.system.MemoryUtil.memFree;
 
 public class Loader {
 
     private static ArrayList<Integer> vaos = new ArrayList<>();
     private static ArrayList<Integer> vbos = new ArrayList<>();
 
-    public static Model createModel(float[] vertices, int vertexSize, int[] indices) {
+    public static Model createModel(float[] vertices, int vertexSize, int[] indices, float[] colors) {
         // Create and bind the vertex array
         int vaoID = glGenVertexArrays();
         vaos.add(vaoID);
         glBindVertexArray(vaoID);
         storeFloatDataInAttribute(0, vertices, vertexSize);
+        storeFloatDataInAttribute(1, colors, 4);
         int iboID = storeIntDataInIndices(indices);
         return new Model(new Mesh(vertices, vertexSize, indices, iboID), vaoID);
     }
@@ -61,7 +62,6 @@ public class Loader {
             // Unbind the vbo
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         }
-
         return iboID;
     }
 

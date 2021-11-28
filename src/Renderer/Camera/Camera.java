@@ -1,37 +1,43 @@
 package Renderer.Camera;
 
+import Utils.Maths;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 public class Camera {
 
-    private float fov;
-    private float zNear;
-    private float zFar;
     private Matrix4f projectionMatrix;
-    private float aspectRatio;
+    private Matrix4f transformationMatrix;
+    private Vector3f position;
+    private Vector3f rotation;
+    private Vector3f scale;
 
-    public Camera(float fov, float zNear, float zFar, float aspectRatio) {
-        this.aspectRatio = aspectRatio;
-        this.projectionMatrix = new Matrix4f().perspective(fov, aspectRatio, zNear, zFar);
+    public Camera(float fov, float aspectRatio, float zNear, float zFar, Vector3f position, Vector3f rotation, Vector3f scale) {
+        this.position = position;
+        this.rotation = rotation;
+        this.scale = scale;
+        this.projectionMatrix = Maths.createPerspectiveMatrix(fov, aspectRatio, zNear, zFar);
+        this.transformationMatrix = new Matrix4f().identity();
+        Maths.setTransformationMatrix(this.transformationMatrix, position, rotation, scale);
     }
 
     public Matrix4f getProjectionMatrix() {
         return projectionMatrix;
     }
 
-    public float getFov() {
-        return fov;
+    public Matrix4f getTransformationMatrix() {
+        return transformationMatrix;
     }
 
-    public float getzNear() {
-        return zNear;
+    public Vector3f getPosition() {
+        return position;
     }
 
-    public float getzFar() {
-        return zFar;
+    public Vector3f getRotation() {
+        return rotation;
     }
 
-    public float getAspectRatio() {
-        return aspectRatio;
+    public Vector3f getScale() {
+        return scale;
     }
 }

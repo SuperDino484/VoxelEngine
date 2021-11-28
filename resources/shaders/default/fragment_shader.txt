@@ -1,9 +1,11 @@
 #version 460 core
 
+in vec4 fColor;
+
 out vec4 oColor;
 
 void main() {
 
-    oColor = vec4(1.0, 0.3, 0.5, 1.0);
+    oColor = fColor;
 
 }

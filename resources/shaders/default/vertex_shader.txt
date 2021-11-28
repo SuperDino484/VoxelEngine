@@ -1,11 +1,16 @@
 #version 460 core
 
 layout(location = 0) in vec3 pos;
+layout(location = 1) in vec4 col;
+
+out vec4 fColor;
 
 uniform mat4 projectionMatrix;
+uniform mat4 transformationMatrix = mat4(1.0);
 
 void main() {
 
-    gl_Position = projectionMatrix * vec4(pos.xyz, 1.0);
+    gl_Position = projectionMatrix * transformationMatrix * vec4(pos.xyz, 1.0);
+    fColor = col;
 
 }

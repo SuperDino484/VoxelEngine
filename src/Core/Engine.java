@@ -1,13 +1,15 @@
 package Core;
 
 import Renderer.Camera.Camera;
-import Renderer.MasterRenderer;
+import Renderer.RendererTypes.MasterRenderer;
 import Renderer.Models.Loader;
 import Renderer.Models.Model;
 import Renderer.Shaders.ShaderProgram;
 import Renderer.Shaders.ShaderType;
-import Renderer.Window;
+import Renderer.Display.Window;
+import Utils.Maths;
 import Utils.Time;
+import org.joml.Vector3f;
 
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import static org.lwjgl.opengl.GL11.*;
@@ -37,7 +39,7 @@ public class Engine {
         this.zNear = 0.01f;
         this.zFar = 1000.0f;
         this.aspectRatio = (float) window.getWidth() / window.getHeight();
-        this.camera = new Camera(fov, zNear, zFar, aspectRatio);
+        this.camera = new Camera(fov, aspectRatio, zNear, zFar, new Vector3f(0, -0.5f, -2.5f), new Vector3f(10, 0, 0), new Vector3f(1, 1, 1));
         this.masterRenderer = new MasterRenderer();
     }
 
@@ -47,7 +49,7 @@ public class Engine {
     }
 
     private void tick() {
-
+        //camera.getRotation().add(new Vector3f(10f, 0, 0));
     }
 
     private void render() {
@@ -76,32 +78,57 @@ public class Engine {
         final double TPS_INTERVAL = 1f / TPS;
 
         float[] positions = {
-                -0.5f, -0.5f, -1.0f,
+                // Front
+                -0.5f, -0.5f, 0.0f,
+                -0.5f,  0.5f, 0.0f,
+                 0.5f,  0.5f, 0.0f,
+                 0.5f, -0.5f, 0.0f,
+                // Top
+                -0.5f,  0.5f,  0.0f,
                 -0.5f,  0.5f, -1.0f,
                  0.5f,  0.5f, -1.0f,
-                 0.5f, -0.5f, -1.0f
+                 0.5f,  0.5f,  0.0f,
+
         };
 
         int[] indices = {
+                // Front
                 0, 1, 2,
-                2, 3, 0
+                2, 3, 0,
+                // Top
+                4, 5, 6,
+                6, 7, 4
         };
 
-        Model quad = Loader.createModel(positions, 3, indices);
+        float[] colors = {
+            // Front
+            0.5f, 0.8f, 0.3f, 1.0f,
+            0.5f, 0.8f, 0.3f, 1.0f,
+            0.5f, 0.8f, 0.3f, 1.0f,
+            0.5f, 0.8f, 0.3f, 1.0f,
+            // Top
+            0.2f, 0.8f, 0.3f, 1.0f,
+            0.2f, 0.8f, 0.3f, 1.0f,
+            0.2f, 0.8f, 0.3f, 1.0f,
+            0.2f, 0.8f, 0.3f, 1.0f
+        };
+
+        Model quad = Loader.createModel(positions, 3, indices, colors);
 
         // Testing shader
-        ShaderProgram shaderCluster = ShaderProgram.createShaderCluster();
+        ShaderProgram shaderProgram = ShaderProgram.createShaderCluster();
         ShaderType vertex = ShaderType.createShaderType(GL_VERTEX_SHADER, "resources/shaders/default/vertex_shader.txt");
         ShaderType fragment = ShaderType.createShaderType(GL_FRAGMENT_SHADER, "resources/shaders/default/fragment_shader.txt");
         vertex.compileSource();
         fragment.compileSource();
-        shaderCluster.addShaderType(vertex);
-        shaderCluster.addShaderType(fragment);
-        shaderCluster.linkAndValidateShaders();
-        shaderCluster.bind();
-        shaderCluster.storeUniformLocation("projectionMatrix");
+        shaderProgram.addShaderType(vertex);
+        shaderProgram.addShaderType(fragment);
+        shaderProgram.linkAndValidateShaders();
+        shaderProgram.bind();
+        shaderProgram.storeUniformLocation("projectionMatrix");
+        shaderProgram.storeUniformLocation("transformationMatrix");
 
-        shaderCluster.setUniformMat4("projectionMatrix", camera.getProjectionMatrix());
+        shaderProgram.setUniformMat4("projectionMatrix", camera.getProjectionMatrix());
 
         while(!glfwWindowShouldClose(window.getWindowHandle())) {
             // Calculate delta time and steps
@@ -120,16 +147,20 @@ public class Engine {
 
             // Render the game stuff
             render();
+            Maths.setTransformationMatrix(camera.getTransformationMatrix(), camera.getPosition(), camera.getRotation(), camera.getScale());
+            shaderProgram.setUniformMat4("transformationMatrix", camera.getTransformationMatrix());
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quad.getMesh().getIboID());
             glEnableVertexAttribArray(0);
+            glEnableVertexAttribArray(1);
             glDrawElements(GL_TRIANGLES, quad.getMesh().getIndices().length, GL_UNSIGNED_INT, 0);
             glDisableVertexAttribArray(0);
+            glDisableVertexAttribArray(1);
 
             // Update the window and poll events
             window.update();
         }
 
-        shaderCluster.cleanup();
+        shaderProgram.cleanup();
     }
 
 }

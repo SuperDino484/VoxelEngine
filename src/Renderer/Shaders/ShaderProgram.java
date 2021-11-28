@@ -89,6 +89,7 @@ public class ShaderProgram {
     public void addShaderType(ShaderType shaderType) {
         // Attach shader to program
         glAttachShader(programID, shaderType.getShaderID());
+        shaders.add(shaderType);
     }
 
     public int getProgramID() {

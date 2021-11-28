@@ -1,4 +1,4 @@
-package Renderer;
+package Renderer.Display;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
