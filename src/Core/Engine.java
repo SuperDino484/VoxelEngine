@@ -1,11 +1,10 @@
 package Core;
 
 import Renderer.Camera.Camera;
-import Renderer.Models.Data.Quad;
+import Renderer.Models.Data.Cube;
 import Renderer.Models.TexturedModel;
 import Renderer.RendererTypes.MasterRenderer;
 import Renderer.Models.Loader;
-import Renderer.Models.Model;
 import Renderer.Shaders.ShaderProgram;
 import Renderer.Shaders.ShaderType;
 import Renderer.Display.Window;
@@ -42,7 +41,7 @@ public class Engine {
         this.zNear = 0.01f;
         this.zFar = 1000.0f;
         this.aspectRatio = (float) window.getWidth() / window.getHeight();
-        this.camera = new Camera(fov, aspectRatio, zNear, zFar, new Vector3f(0, -0.5f, -2.5f), new Vector3f(10, 0, 0), new Vector3f(1, 1, 1));
+        this.camera = new Camera(fov, aspectRatio, zNear, zFar, new Vector3f(0, -0.2f, -2.5f), new Vector3f(10, 0, 0), new Vector3f(1, 1, 1));
         this.masterRenderer = new MasterRenderer();
     }
 
@@ -52,7 +51,8 @@ public class Engine {
     }
 
     private void tick() {
-        //camera.getRotation().add(new Vector3f(10f, 0, 0));
+        //camera.getPosition().add(new Vector3f(-0.01f, 0, 0));
+        camera.getRotation().add(new Vector3f(0, 2f, 1f));
     }
 
     private void render() {
@@ -80,53 +80,10 @@ public class Engine {
         final int TPS = 60;
         final double TPS_INTERVAL = 1f / TPS;
 
-        float[] colors = new float[]{
-                0.5f, 0.0f, 0.0f,
-                0.0f, 0.5f, 0.0f,
-                0.0f, 0.0f, 0.5f,
-                0.0f, 0.5f, 0.5f,
-                0.5f, 0.0f, 0.0f,
-                0.0f, 0.5f, 0.0f,
-                0.0f, 0.0f, 0.5f,
-                0.0f, 0.5f, 0.5f,
-        };
-
-        float[] textCoords = new float[]{
-                0.0f, 0.0f,
-                0.0f, 0.5f,
-                0.5f, 0.5f,
-                0.5f, 0.0f,
-
-                0.0f, 0.0f,
-                0.5f, 0.0f,
-                0.0f, 0.5f,
-                0.5f, 0.5f,
-
-                // For text coords in top face
-                0.0f, 0.5f,
-                0.5f, 0.5f,
-                0.0f, 1.0f,
-                0.5f, 1.0f,
-
-                // For text coords in right face
-                0.0f, 0.0f,
-                0.0f, 0.5f,
-
-                // For text coords in left face
-                0.5f, 0.0f,
-                0.5f, 0.5f,
-
-                // For text coords in bottom face
-                0.5f, 0.0f,
-                1.0f, 0.0f,
-                0.5f, 0.5f,
-                1.0f, 0.5f,
-        };
-
-        Quad q = new Quad();
+        Cube q = new Cube();
 
         Texture texture = new Texture("resources/textures/cube_texture.png", 0);
-        TexturedModel cube = Loader.createModel(texture, q.getVertices(), q.getIndices(), textCoords);
+        TexturedModel cube = Loader.createModel(texture, q.getVertices(), q.getIndices(), q.getTexCoords());
 
         // Testing shader
         ShaderProgram shaderProgram = ShaderProgram.createShaderCluster();
