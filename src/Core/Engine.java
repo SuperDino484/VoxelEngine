@@ -1,12 +1,15 @@
 package Core;
 
 import Renderer.Camera.Camera;
+import Renderer.Models.Data.Quad;
+import Renderer.Models.TexturedModel;
 import Renderer.RendererTypes.MasterRenderer;
 import Renderer.Models.Loader;
 import Renderer.Models.Model;
 import Renderer.Shaders.ShaderProgram;
 import Renderer.Shaders.ShaderType;
 import Renderer.Display.Window;
+import Renderer.Textures.Texture;
 import Utils.Maths;
 import Utils.Time;
 import org.joml.Vector3f;
@@ -33,7 +36,7 @@ public class Engine {
     private MasterRenderer masterRenderer;
 
     public Engine() {
-        this.window = Window.createWindow("Voxel Engine", 1920, 1080);
+        this.window = Window.createWindow("Voxel Engine", 1080, 720);
 
         this.fov = (float) Math.toRadians(60.0f);
         this.zNear = 0.01f;
@@ -53,7 +56,7 @@ public class Engine {
     }
 
     private void render() {
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.3f, 0.5f, 0.8f, 1.0f);
     }
 
@@ -77,43 +80,53 @@ public class Engine {
         final int TPS = 60;
         final double TPS_INTERVAL = 1f / TPS;
 
-        float[] positions = {
-                // Front
-                -0.5f, -0.5f, 0.0f,
-                -0.5f,  0.5f, 0.0f,
-                 0.5f,  0.5f, 0.0f,
-                 0.5f, -0.5f, 0.0f,
-                // Top
-                -0.5f,  0.5f,  0.0f,
-                -0.5f,  0.5f, -1.0f,
-                 0.5f,  0.5f, -1.0f,
-                 0.5f,  0.5f,  0.0f,
-
+        float[] colors = new float[]{
+                0.5f, 0.0f, 0.0f,
+                0.0f, 0.5f, 0.0f,
+                0.0f, 0.0f, 0.5f,
+                0.0f, 0.5f, 0.5f,
+                0.5f, 0.0f, 0.0f,
+                0.0f, 0.5f, 0.0f,
+                0.0f, 0.0f, 0.5f,
+                0.0f, 0.5f, 0.5f,
         };
 
-        int[] indices = {
-                // Front
-                0, 1, 2,
-                2, 3, 0,
-                // Top
-                4, 5, 6,
-                6, 7, 4
+        float[] textCoords = new float[]{
+                0.0f, 0.0f,
+                0.0f, 0.5f,
+                0.5f, 0.5f,
+                0.5f, 0.0f,
+
+                0.0f, 0.0f,
+                0.5f, 0.0f,
+                0.0f, 0.5f,
+                0.5f, 0.5f,
+
+                // For text coords in top face
+                0.0f, 0.5f,
+                0.5f, 0.5f,
+                0.0f, 1.0f,
+                0.5f, 1.0f,
+
+                // For text coords in right face
+                0.0f, 0.0f,
+                0.0f, 0.5f,
+
+                // For text coords in left face
+                0.5f, 0.0f,
+                0.5f, 0.5f,
+
+                // For text coords in bottom face
+                0.5f, 0.0f,
+                1.0f, 0.0f,
+                0.5f, 0.5f,
+                1.0f, 0.5f,
         };
 
-        float[] colors = {
-            // Front
-            0.5f, 0.8f, 0.3f, 1.0f,
-            0.5f, 0.8f, 0.3f, 1.0f,
-            0.5f, 0.8f, 0.3f, 1.0f,
-            0.5f, 0.8f, 0.3f, 1.0f,
-            // Top
-            0.2f, 0.8f, 0.3f, 1.0f,
-            0.2f, 0.8f, 0.3f, 1.0f,
-            0.2f, 0.8f, 0.3f, 1.0f,
-            0.2f, 0.8f, 0.3f, 1.0f
-        };
+        Quad q = new Quad();
 
-        Model quad = Loader.createModel(positions, 3, indices, colors);
+        Texture texture = new Texture("resources/textures/cube_texture.png", 0);
+        TexturedModel cube = Loader.createModel(texture, q.getVertices(), q.getIndices(), textCoords);
 
         // Testing shader
         ShaderProgram shaderProgram = ShaderProgram.createShaderCluster();
@@ -127,8 +140,11 @@ public class Engine {
         shaderProgram.bind();
         shaderProgram.storeUniformLocation("projectionMatrix");
         shaderProgram.storeUniformLocation("transformationMatrix");
+        shaderProgram.storeUniformLocation("texSampler");
+        shaderProgram.setUniform1i("texSampler", 0);
 
         shaderProgram.setUniformMat4("projectionMatrix", camera.getProjectionMatrix());
+
 
         while(!glfwWindowShouldClose(window.getWindowHandle())) {
             // Calculate delta time and steps
@@ -149,10 +165,11 @@ public class Engine {
             render();
             Maths.setTransformationMatrix(camera.getTransformationMatrix(), camera.getPosition(), camera.getRotation(), camera.getScale());
             shaderProgram.setUniformMat4("transformationMatrix", camera.getTransformationMatrix());
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quad.getMesh().getIboID());
+            texture.bind();
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cube.getModel().getMesh().getIboID());
             glEnableVertexAttribArray(0);
             glEnableVertexAttribArray(1);
-            glDrawElements(GL_TRIANGLES, quad.getMesh().getIndices().length, GL_UNSIGNED_INT, 0);
+            glDrawElements(GL_TRIANGLES, cube.getModel().getMesh().getIndices().length, GL_UNSIGNED_INT, 0);
             glDisableVertexAttribArray(0);
             glDisableVertexAttribArray(1);
 

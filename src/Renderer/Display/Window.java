@@ -9,6 +9,7 @@ import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 
 public class Window {
@@ -79,6 +80,7 @@ public class Window {
         glfwShowWindow(windowHandle);
 
         GL.createCapabilities();
+        glEnable(GL_DEPTH_TEST);
     }
 
     public void update() {

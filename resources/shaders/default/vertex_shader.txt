@@ -1,9 +1,9 @@
 #version 460 core
 
 layout(location = 0) in vec3 pos;
-layout(location = 1) in vec4 col;
+layout(location = 1) in vec2 texCoord;
 
-out vec4 fColor;
+out vec2 outTexCoord;
 
 uniform mat4 projectionMatrix;
 uniform mat4 transformationMatrix = mat4(1.0);
@@ -11,6 +11,6 @@ uniform mat4 transformationMatrix = mat4(1.0);
 void main() {
 
     gl_Position = projectionMatrix * transformationMatrix * vec4(pos.xyz, 1.0);
-    fColor = col;
+    outTexCoord = texCoord;
 
 }

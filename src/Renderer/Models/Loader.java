@@ -1,5 +1,6 @@
 package Renderer.Models;
 
+import Renderer.Textures.Texture;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
 
@@ -16,15 +17,15 @@ public class Loader {
     private static ArrayList<Integer> vaos = new ArrayList<>();
     private static ArrayList<Integer> vbos = new ArrayList<>();
 
-    public static Model createModel(float[] vertices, int vertexSize, int[] indices, float[] colors) {
+    public static TexturedModel createModel(Texture texture, float[] vertices, int[] indices, float[] texCoords) {
         // Create and bind the vertex array
         int vaoID = glGenVertexArrays();
         vaos.add(vaoID);
         glBindVertexArray(vaoID);
-        storeFloatDataInAttribute(0, vertices, vertexSize);
-        storeFloatDataInAttribute(1, colors, 4);
+        storeFloatDataInAttribute(0, vertices, 3);
+        storeFloatDataInAttribute(1, texCoords, 2);
         int iboID = storeIntDataInIndices(indices);
-        return new Model(new Mesh(vertices, vertexSize, indices, iboID), vaoID);
+        return new TexturedModel(new Model(new Mesh(vertices, indices, iboID), vaoID), texture);
     }
 
     private static void storeFloatDataInAttribute(int slot, float[] vertices, int vertexSize) {
