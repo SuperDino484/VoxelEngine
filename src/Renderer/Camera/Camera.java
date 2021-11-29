@@ -7,7 +7,7 @@ import org.joml.Vector3f;
 public class Camera {
 
     private Matrix4f projectionMatrix;
-    private Matrix4f transformationMatrix;
+    private Matrix4f viewMatrix;
     private Vector3f position;
     private Vector3f rotation;
     private Vector3f scale;
@@ -17,7 +17,7 @@ public class Camera {
         this.rotation = rotation;
         this.scale = scale;
         this.projectionMatrix = Maths.createPerspectiveMatrix(fov, aspectRatio, zNear, zFar);
-        this.transformationMatrix = new Matrix4f().identity();
+        this.viewMatrix = new Matrix4f().identity();
         Maths.setViewMatrix(this);
     }
 
@@ -25,8 +25,8 @@ public class Camera {
         return projectionMatrix;
     }
 
-    public Matrix4f getTransformationMatrix() {
-        return transformationMatrix;
+    public Matrix4f getViewMatrix() {
+        return viewMatrix;
     }
 
     public Vector3f getPosition() {

@@ -11,7 +11,7 @@ public class Maths {
     }
 
     public static void setViewMatrix(Camera camera) {
-        Matrix4f matrix4f = camera.getTransformationMatrix();
+        Matrix4f matrix4f = camera.getViewMatrix();
         Vector3f position = camera.getPosition();
         Vector3f rotation = camera.getRotation();
         Vector3f scale = camera.getScale();

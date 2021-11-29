@@ -121,7 +121,7 @@ public class Engine {
             // Render the game stuff
             render();
             Maths.setViewMatrix(camera);
-            shaderProgram.setUniformMat4("viewMatrix", camera.getTransformationMatrix());
+            shaderProgram.setUniformMat4("viewMatrix", camera.getViewMatrix());
             texture.bind();
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cube.getModel().getMesh().getIboID());
             glEnableVertexAttribArray(0);
