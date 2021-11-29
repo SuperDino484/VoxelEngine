@@ -1,5 +1,6 @@
 package Utils;
 
+import Renderer.Camera.Camera;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -9,7 +10,11 @@ public class Maths {
         return new Matrix4f().perspective(fov, aspectRatio, zNear, zFar);
     }
 
-    public static void setTransformationMatrix(Matrix4f matrix4f, Vector3f position, Vector3f rotation, Vector3f scale) {
+    public static void setViewMatrix(Camera camera) {
+        Matrix4f matrix4f = camera.getTransformationMatrix();
+        Vector3f position = camera.getPosition();
+        Vector3f rotation = camera.getRotation();
+        Vector3f scale = camera.getScale();
         matrix4f.identity().translate(position).
                 rotateX((float)Math.toRadians(rotation.x)).
                 rotateY((float)Math.toRadians(rotation.y)).

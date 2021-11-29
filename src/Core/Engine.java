@@ -96,7 +96,7 @@ public class Engine {
         shaderProgram.linkAndValidateShaders();
         shaderProgram.bind();
         shaderProgram.storeUniformLocation("projectionMatrix");
-        shaderProgram.storeUniformLocation("transformationMatrix");
+        shaderProgram.storeUniformLocation("viewMatrix");
         shaderProgram.storeUniformLocation("texSampler");
         shaderProgram.setUniform1i("texSampler", 0);
 
@@ -120,8 +120,8 @@ public class Engine {
 
             // Render the game stuff
             render();
-            Maths.setTransformationMatrix(camera.getTransformationMatrix(), camera.getPosition(), camera.getRotation(), camera.getScale());
-            shaderProgram.setUniformMat4("transformationMatrix", camera.getTransformationMatrix());
+            Maths.setViewMatrix(camera);
+            shaderProgram.setUniformMat4("viewMatrix", camera.getTransformationMatrix());
             texture.bind();
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cube.getModel().getMesh().getIboID());
             glEnableVertexAttribArray(0);

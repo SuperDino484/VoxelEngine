@@ -18,7 +18,7 @@ public class Camera {
         this.scale = scale;
         this.projectionMatrix = Maths.createPerspectiveMatrix(fov, aspectRatio, zNear, zFar);
         this.transformationMatrix = new Matrix4f().identity();
-        Maths.setTransformationMatrix(this.transformationMatrix, position, rotation, scale);
+        Maths.setViewMatrix(this);
     }
 
     public Matrix4f getProjectionMatrix() {
