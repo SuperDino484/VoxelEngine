@@ -81,6 +81,6 @@ public class EntityRenderer implements IRenderer {
 
     @Override
     public void cleanup() {
-
+        entityShader.cleanup();
     }
 }

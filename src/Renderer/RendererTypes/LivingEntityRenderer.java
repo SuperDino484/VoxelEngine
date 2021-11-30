@@ -85,6 +85,6 @@ public class LivingEntityRenderer implements IRenderer {
 
     @Override
     public void cleanup() {
-
+        livingEntityShader.cleanup();
     }
 }

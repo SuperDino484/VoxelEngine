@@ -1,14 +1,12 @@
 package Core;
 
 import Entities.Entity;
+import Entities.Living.Player;
 import Entities.LivingEntity;
 import Renderer.Camera.Camera;
-import Renderer.Models.Data.Cube;
 import Renderer.Models.TexturedModel;
 import Renderer.RendererTypes.MasterRenderer;
 import Renderer.Models.Loader;
-import Renderer.Shaders.ShaderProgram;
-import Renderer.Shaders.ShaderType;
 import Renderer.Display.Window;
 import Renderer.Textures.Texture;
 import Utils.Maths;
@@ -17,11 +15,8 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.*;
 
 public class Engine {
 
@@ -36,6 +31,8 @@ public class Engine {
     private float zFar = 1000.0f;
     private float aspectRatio;
 
+    Player player;
+
     // Renderer variables
     private MasterRenderer masterRenderer;
 
@@ -46,7 +43,7 @@ public class Engine {
         this.zNear = 0.01f;
         this.zFar = 1000.0f;
         this.aspectRatio = (float) window.getWidth() / window.getHeight();
-        this.camera = new Camera(fov, aspectRatio, zNear, zFar, new Vector3f(-1f, -0.4f, -2.5f), new Vector3f(10, 0, 0), new Vector3f(1, 1, 1));
+        this.camera = new Camera(fov, aspectRatio, zNear, zFar, new Vector3f(-1f, -0.6f, -2.5f), new Vector3f(10, 0, 0), new Vector3f(1, 1, 1));
         this.masterRenderer = new MasterRenderer(camera);
     }
 
@@ -58,6 +55,7 @@ public class Engine {
     private void tick() {
         //camera.getRotation().add(new Vector3f(0, 2f, 1f));
         camera.tick();
+        player.tick();
     }
 
     private void render() {
@@ -70,10 +68,12 @@ public class Engine {
 //        if(Keyboard.isKeyPressed(GLFW_KEY_D)) {
 //            camera.getPosition().add(new Vector3f(1f, 0f, 0f));
 //        }
-        camera.input();
+        //camera.input();
+        player.input();
     }
 
     public void cleanup() {
+        Texture.cleanup();
         masterRenderer.cleanup();
 
         // This needs to be last to protect crashes
@@ -92,16 +92,15 @@ public class Engine {
 
 
         Texture texture = new Texture("resources/textures/cube_texture.png", 0);
+        Texture texture2 = new Texture("resources/textures/player_texture.png", 0);
         TexturedModel cube = Loader.createModel(texture, Maths.cubePositions, Maths.cubeIndices, Maths.cubeTextureCoords);
+        TexturedModel cube2 = Loader.createModel(texture2, Maths.cubePositions, Maths.cubeIndices, Maths.cubeTextureCoords);
         ArrayList<Entity> entities = new ArrayList<>();
         for(int i = 0; i < 100; i++) {
-            for(int j = 0; j < 10; j++) {
-                entities.add(new Entity(new Vector3f(i, -j, 0), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1), cube));
-            }
+            entities.add(new Entity(new Vector3f(i, 0, 0), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1), cube));
         }
 
-        LivingEntity livingEntity = new LivingEntity(100, 100, new Vector3f(0, 1, 0), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1), cube);
-
+        player = new Player(camera, 100, 100, new Vector3f(0, 0.65f, 0), new Vector3f(0, 0, 0), new Vector3f(0.25f, 0.25f, 0.25f), cube2);
 
         while(!glfwWindowShouldClose(window.getWindowHandle())) {
             // Calculate delta time and steps
@@ -121,7 +120,7 @@ public class Engine {
             for(Entity entity : entities) {
                 masterRenderer.getEntityRenderer().processEntity(entity);
             }
-            masterRenderer.getLivingEntityRenderer().processLivingEntity(livingEntity);
+            masterRenderer.getLivingEntityRenderer().processLivingEntity(player);
 
             // Render the game stuff
             render();

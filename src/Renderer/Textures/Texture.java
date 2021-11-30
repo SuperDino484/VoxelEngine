@@ -4,6 +4,7 @@ import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
@@ -14,6 +15,8 @@ import static org.lwjgl.stb.STBImage.*;
 
 public class Texture {
 
+    private static ArrayList<Integer> textureIDS = new ArrayList<>();
+
     private int textureID;
     private String path;
     private int textureSlot;
@@ -23,6 +26,7 @@ public class Texture {
         this.textureSlot = textureSlot;
         // Create the texture
         this.textureID = glGenTextures();
+        textureIDS.add(textureID);
         try(MemoryStack stack = MemoryStack.stackPush()) {
             stbi_set_flip_vertically_on_load(true);
             // Get texture data
@@ -60,9 +64,10 @@ public class Texture {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    public void cleanup() {
-        unbind();
-        glDeleteTextures(textureID);
+    public static void cleanup() {
+        for(int textureID : textureIDS) {
+            glDeleteTextures(textureID);
+        }
     }
 
     public int getTextureID() {
