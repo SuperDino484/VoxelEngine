@@ -76,6 +76,7 @@ public class EntityRenderer implements IRenderer {
             glBindVertexArray(0);
         }
         entityShader.unbind();
+        entities.clear();
     }
 
     @Override

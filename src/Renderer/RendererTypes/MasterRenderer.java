@@ -1,5 +1,6 @@
 package Renderer.RendererTypes;
 
+import Entities.LivingEntity;
 import Renderer.Camera.Camera;
 
 
@@ -10,7 +11,7 @@ public class MasterRenderer {
     private IRenderer terrainRenderer;
 
     public MasterRenderer(Camera camera) {
-        livingEntityRenderer = new LivingEntityRenderer();
+        livingEntityRenderer = new LivingEntityRenderer(camera);
         entityRenderer = new EntityRenderer(camera);
         terrainRenderer = new TerrainRenderer();
     }
@@ -29,6 +30,10 @@ public class MasterRenderer {
 
     public EntityRenderer getEntityRenderer() {
         return (EntityRenderer) entityRenderer;
+    }
+
+    public LivingEntityRenderer getLivingEntityRenderer() {
+        return (LivingEntityRenderer) livingEntityRenderer;
     }
 
 }

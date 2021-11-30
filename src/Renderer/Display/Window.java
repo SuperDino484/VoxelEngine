@@ -1,5 +1,7 @@
 package Renderer.Display;
 
+import Core.Keyboard;
+import Core.Mouse;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
@@ -72,8 +74,13 @@ public class Window {
                     (vidmode.height() - pHeight.get(0)) / 2
             );
         }
+        glfwSetKeyCallback(windowHandle, Keyboard::keyCallback);
+        glfwSetCursorPosCallback(windowHandle, Mouse::cursorPositionCallback);
+        glfwSetMouseButtonCallback(windowHandle, Mouse::mouseButtonCallback);
+        glfwSetScrollCallback(windowHandle, Mouse::mouseScrollCallback);
 
         glfwMakeContextCurrent(windowHandle);
+
 
         glfwSwapInterval(1);
 

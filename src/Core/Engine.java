@@ -1,6 +1,7 @@
 package Core;
 
 import Entities.Entity;
+import Entities.LivingEntity;
 import Renderer.Camera.Camera;
 import Renderer.Models.Data.Cube;
 import Renderer.Models.TexturedModel;
@@ -14,6 +15,9 @@ import Utils.Maths;
 import Utils.Time;
 import org.joml.Vector3f;
 
+import java.util.ArrayList;
+
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
@@ -38,7 +42,7 @@ public class Engine {
     public Engine() {
         this.window = Window.createWindow("Voxel Engine", 1080, 720);
 
-        this.fov = (float) Math.toRadians(60.0f);
+        this.fov = (float) Math.toRadians(90.0f);
         this.zNear = 0.01f;
         this.zFar = 1000.0f;
         this.aspectRatio = (float) window.getWidth() / window.getHeight();
@@ -53,6 +57,7 @@ public class Engine {
 
     private void tick() {
         //camera.getRotation().add(new Vector3f(0, 2f, 1f));
+        camera.tick();
     }
 
     private void render() {
@@ -62,10 +67,14 @@ public class Engine {
     }
 
     private void input() {
-
+//        if(Keyboard.isKeyPressed(GLFW_KEY_D)) {
+//            camera.getPosition().add(new Vector3f(1f, 0f, 0f));
+//        }
+        camera.input();
     }
 
     public void cleanup() {
+        masterRenderer.cleanup();
 
         // This needs to be last to protect crashes
         window.cleanup();
@@ -84,27 +93,14 @@ public class Engine {
 
         Texture texture = new Texture("resources/textures/cube_texture.png", 0);
         TexturedModel cube = Loader.createModel(texture, Maths.cubePositions, Maths.cubeIndices, Maths.cubeTextureCoords);
-        Entity[] entities = new Entity[100];
+        ArrayList<Entity> entities = new ArrayList<>();
         for(int i = 0; i < 100; i++) {
-            entities[i] = new Entity(new Vector3f(0, 0, -i), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1), cube);
+            for(int j = 0; j < 10; j++) {
+                entities.add(new Entity(new Vector3f(i, -j, 0), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1), cube));
+            }
         }
 
-        // Testing shader
-        ShaderProgram shaderProgram = ShaderProgram.createShaderCluster();
-        ShaderType vertex = ShaderType.createShaderType(GL_VERTEX_SHADER, "resources/shaders/default/vertex_shader.txt");
-        ShaderType fragment = ShaderType.createShaderType(GL_FRAGMENT_SHADER, "resources/shaders/default/fragment_shader.txt");
-        vertex.compileSource();
-        fragment.compileSource();
-        shaderProgram.addShaderType(vertex);
-        shaderProgram.addShaderType(fragment);
-        shaderProgram.linkAndValidateShaders();
-        shaderProgram.bind();
-        shaderProgram.storeUniformLocation("projectionMatrix");
-        shaderProgram.storeUniformLocation("viewMatrix");
-        shaderProgram.storeUniformLocation("texSampler");
-        shaderProgram.setUniform1i("texSampler", 0);
-
-        shaderProgram.setUniformMat4("projectionMatrix", camera.getProjectionMatrix());
+        LivingEntity livingEntity = new LivingEntity(100, 100, new Vector3f(0, 1, 0), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1), cube);
 
 
         while(!glfwWindowShouldClose(window.getWindowHandle())) {
@@ -121,26 +117,19 @@ public class Engine {
                 steps -= TPS_INTERVAL;
                 tick();
             }
+
             for(Entity entity : entities) {
                 masterRenderer.getEntityRenderer().processEntity(entity);
             }
+            masterRenderer.getLivingEntityRenderer().processLivingEntity(livingEntity);
+
             // Render the game stuff
             render();
-//            Maths.setViewMatrix(camera);
-//            shaderProgram.setUniformMat4("viewMatrix", camera.getViewMatrix());
-//            texture.bind();
-//            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, entity.getTexturedModel().getModel().getIboID());
-//            glEnableVertexAttribArray(0);
-//            glEnableVertexAttribArray(1);
-//            glDrawElements(GL_TRIANGLES, entity.getTexturedModel().getModel().getMesh().getIndices().length, GL_UNSIGNED_INT, 0);
-//            glDisableVertexAttribArray(0);
-//            glDisableVertexAttribArray(1);
 
             // Update the window and poll events
             window.update();
         }
 
-        shaderProgram.cleanup();
     }
 
 }
