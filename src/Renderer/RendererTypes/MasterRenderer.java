@@ -9,9 +9,9 @@ public class MasterRenderer {
     private IRenderer entityRenderer;
     private IRenderer terrainRenderer;
 
-    public MasterRenderer() {
+    public MasterRenderer(Camera camera) {
         livingEntityRenderer = new LivingEntityRenderer();
-        entityRenderer = new EntityRenderer();
+        entityRenderer = new EntityRenderer(camera);
         terrainRenderer = new TerrainRenderer();
     }
 
@@ -25,6 +25,10 @@ public class MasterRenderer {
         livingEntityRenderer.cleanup();
         entityRenderer.cleanup();
         terrainRenderer.cleanup();
+    }
+
+    public EntityRenderer getEntityRenderer() {
+        return (EntityRenderer) entityRenderer;
     }
 
 }

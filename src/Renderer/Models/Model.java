@@ -4,10 +4,12 @@ public class Model {
 
     private Mesh mesh;
     private int vaoID;
+    private int iboID;
 
-    public Model(Mesh mesh, int vaoID) {
+    public Model(Mesh mesh, int vaoID, int iboID) {
         this.mesh = mesh;
         this.vaoID = vaoID;
+        this.iboID = iboID;
     }
 
     public Mesh getMesh() {
@@ -16,5 +18,9 @@ public class Model {
 
     public int getVaoID() {
         return vaoID;
+    }
+
+    public int getIboID() {
+        return iboID;
     }
 }

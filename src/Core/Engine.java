@@ -1,5 +1,6 @@
 package Core;
 
+import Entities.Entity;
 import Renderer.Camera.Camera;
 import Renderer.Models.Data.Cube;
 import Renderer.Models.TexturedModel;
@@ -41,8 +42,8 @@ public class Engine {
         this.zNear = 0.01f;
         this.zFar = 1000.0f;
         this.aspectRatio = (float) window.getWidth() / window.getHeight();
-        this.camera = new Camera(fov, aspectRatio, zNear, zFar, new Vector3f(0, -0.2f, -2.5f), new Vector3f(10, 0, 0), new Vector3f(1, 1, 1));
-        this.masterRenderer = new MasterRenderer();
+        this.camera = new Camera(fov, aspectRatio, zNear, zFar, new Vector3f(-1f, -0.4f, -2.5f), new Vector3f(10, 0, 0), new Vector3f(1, 1, 1));
+        this.masterRenderer = new MasterRenderer(camera);
     }
 
     public void start() {
@@ -51,13 +52,13 @@ public class Engine {
     }
 
     private void tick() {
-        //camera.getPosition().add(new Vector3f(-0.01f, 0, 0));
-        camera.getRotation().add(new Vector3f(0, 2f, 1f));
+        //camera.getRotation().add(new Vector3f(0, 2f, 1f));
     }
 
     private void render() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.3f, 0.5f, 0.8f, 1.0f);
+        masterRenderer.render(camera);
     }
 
     private void input() {
@@ -80,10 +81,13 @@ public class Engine {
         final int TPS = 60;
         final double TPS_INTERVAL = 1f / TPS;
 
-        Cube q = new Cube();
 
         Texture texture = new Texture("resources/textures/cube_texture.png", 0);
-        TexturedModel cube = Loader.createModel(texture, q.getVertices(), q.getIndices(), q.getTexCoords());
+        TexturedModel cube = Loader.createModel(texture, Maths.cubePositions, Maths.cubeIndices, Maths.cubeTextureCoords);
+        Entity[] entities = new Entity[100];
+        for(int i = 0; i < 100; i++) {
+            entities[i] = new Entity(new Vector3f(0, 0, -i), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1), cube);
+        }
 
         // Testing shader
         ShaderProgram shaderProgram = ShaderProgram.createShaderCluster();
@@ -117,18 +121,20 @@ public class Engine {
                 steps -= TPS_INTERVAL;
                 tick();
             }
-
+            for(Entity entity : entities) {
+                masterRenderer.getEntityRenderer().processEntity(entity);
+            }
             // Render the game stuff
             render();
-            Maths.setViewMatrix(camera);
-            shaderProgram.setUniformMat4("viewMatrix", camera.getViewMatrix());
-            texture.bind();
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cube.getModel().getMesh().getIboID());
-            glEnableVertexAttribArray(0);
-            glEnableVertexAttribArray(1);
-            glDrawElements(GL_TRIANGLES, cube.getModel().getMesh().getIndices().length, GL_UNSIGNED_INT, 0);
-            glDisableVertexAttribArray(0);
-            glDisableVertexAttribArray(1);
+//            Maths.setViewMatrix(camera);
+//            shaderProgram.setUniformMat4("viewMatrix", camera.getViewMatrix());
+//            texture.bind();
+//            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, entity.getTexturedModel().getModel().getIboID());
+//            glEnableVertexAttribArray(0);
+//            glEnableVertexAttribArray(1);
+//            glDrawElements(GL_TRIANGLES, entity.getTexturedModel().getModel().getMesh().getIndices().length, GL_UNSIGNED_INT, 0);
+//            glDisableVertexAttribArray(0);
+//            glDisableVertexAttribArray(1);
 
             // Update the window and poll events
             window.update();

@@ -25,7 +25,7 @@ public class Loader {
         storeFloatDataInAttribute(0, vertices, 3);
         storeFloatDataInAttribute(1, texCoords, 2);
         int iboID = storeIntDataInIndices(indices);
-        return new TexturedModel(new Model(new Mesh(vertices, indices, iboID), vaoID), texture);
+        return new TexturedModel(new Model(new Mesh(vertices, indices), vaoID, iboID), texture, texCoords);
     }
 
     private static void storeFloatDataInAttribute(int slot, float[] vertices, int vertexSize) {

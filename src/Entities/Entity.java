@@ -1,6 +1,6 @@
 package Entities;
 
-import Renderer.Models.Model;
+import Renderer.Models.TexturedModel;
 import org.joml.Vector3f;
 
 public class Entity {
@@ -8,13 +8,13 @@ public class Entity {
     private Vector3f position;
     private Vector3f rotation;
     private Vector3f scale;
-    private Model model;
+    private TexturedModel texturedModel;
 
-    public Entity(Vector3f position, Vector3f rotation, Vector3f scale, Model model) {
+    public Entity(Vector3f position, Vector3f rotation, Vector3f scale, TexturedModel model) {
         this.position = position;
         this.rotation = rotation;
         this.scale = scale;
-        this.model = model;
+        this.texturedModel = model;
     }
 
     public Vector3f getPosition() {
@@ -29,7 +29,7 @@ public class Entity {
         return scale;
     }
 
-    public Model getModel() {
-        return model;
+    public TexturedModel getTexturedModel() {
+        return texturedModel;
     }
 }
