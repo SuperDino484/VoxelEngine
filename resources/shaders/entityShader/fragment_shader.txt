@@ -1,0 +1,13 @@
+#version 460 core
+
+in vec4 fColor;
+in vec2 outTexCoord;
+
+uniform sampler2D texSampler;
+out vec4 oColor;
+
+void main() {
+
+    oColor = texture(texSampler, outTexCoord);
+
+}

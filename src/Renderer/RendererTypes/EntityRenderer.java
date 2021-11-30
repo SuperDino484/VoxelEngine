@@ -26,8 +26,8 @@ public class EntityRenderer implements IRenderer {
     public EntityRenderer(Camera camera) {
         this.entities = new HashMap<>();
         entityShader = ShaderProgram.createShaderCluster();
-        vertexShader = ShaderType.createShaderType(GL_VERTEX_SHADER, "resources/shaders/default/vertex_shader.txt");
-        fragmentShader = ShaderType.createShaderType(GL_FRAGMENT_SHADER, "resources/shaders/default/fragment_shader.txt");
+        vertexShader = ShaderType.createShaderType(GL_VERTEX_SHADER, "resources/shaders/entityShader/vertex_shader.txt");
+        fragmentShader = ShaderType.createShaderType(GL_FRAGMENT_SHADER, "resources/shaders/entityShader/fragment_shader.txt");
         vertexShader.compileSource();
         fragmentShader.compileSource();
         entityShader.addShaderType(vertexShader);
