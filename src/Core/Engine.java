@@ -70,6 +70,9 @@ public class Engine {
 //        }
         //camera.input();
         player.input();
+        if(Mouse.getScrollY() != 0) {
+            System.out.println("SCROLL");
+        }
     }
 
     public void cleanup() {
@@ -90,24 +93,24 @@ public class Engine {
         final int TPS = 60;
         final double TPS_INTERVAL = 1f / TPS;
 
-
-        Texture texture = new Texture("resources/textures/cube_texture.png", 0);
-        Texture texture2 = new Texture("resources/textures/player_texture.png", 0);
         Texture palette = new Texture("resources/textures/ColorPalette.png", 0);
-        TexturedModel sphere = Loader.loadModelFromFile("resources/Cone.obj", palette);
-        TexturedModel cube = Loader.createModel(texture, Maths.cubePositions, Maths.cubeIndices, Maths.cubeTextureCoords);
-        TexturedModel cube2 = Loader.createModel(texture2, Maths.cubePositions, Maths.cubeIndices, Maths.cubeTextureCoords);
+        TexturedModel grassBlock = Loader.loadModelFromFile("resources/GrassBlock.obj", palette);
+        TexturedModel dirtBlock = Loader.loadModelFromFile("resources/DirtBlock.obj", palette);
+        TexturedModel playerObj = Loader.loadModelFromFile("resources/Player.obj", palette);
         ArrayList<Entity> entities = new ArrayList<>();
         for(int i = 0; i < 100; i++) {
-            entities.add(new Entity(new Vector3f(i, 0, 0), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1), cube));
+            entities.add(new Entity(new Vector3f(i, 0, 0), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1), grassBlock));
+            for(int j = 1; j < 10; j++) {
+                entities.add(new Entity(new Vector3f(i, -j, 0), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1), dirtBlock));
+            }
         }
 
-        player = new Player(camera, 100, 100, new Vector3f(0, 0.65f, 0), new Vector3f(0, 0, 0), new Vector3f(0.25f, 0.25f, 0.25f), sphere);
+        player = new Player(camera, 100, 100, new Vector3f(0, 0.8f, 0), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1), playerObj);
 
         while(!glfwWindowShouldClose(window.getWindowHandle())) {
             // Calculate delta time and steps
             time = Time.getTimeSeconds();
-            steps += Time.deltaTime = time - lastTime;
+            steps += Time.deltaTime = (float)(time - lastTime);
             lastTime = time;
 
             // Gather user input before the tick method
@@ -129,6 +132,7 @@ public class Engine {
 
             // Update the window and poll events
             window.update();
+            Mouse.endFrame();
         }
 
     }

@@ -19,7 +19,7 @@ public class Loader {
     private static ArrayList<Integer> vaos = new ArrayList<>();
     private static ArrayList<Integer> vbos = new ArrayList<>();
 
-    public static TexturedModel createModel(Texture texture, float[] vertices, int[] indices, float[] texCoords) {
+    private static TexturedModel createModel(Texture texture, float[] vertices, int[] indices, float[] texCoords) {
         // Create and bind the vertex array
         int vaoID = glGenVertexArrays();
         vaos.add(vaoID);
