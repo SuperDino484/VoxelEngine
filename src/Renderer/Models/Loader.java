@@ -2,6 +2,8 @@ package Renderer.Models;
 
 import Renderer.Textures.Texture;
 import org.joml.Vector4f;
+import org.lwjgl.PointerBuffer;
+import org.lwjgl.assimp.*;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.FloatBuffer;
@@ -25,7 +27,56 @@ public class Loader {
         storeFloatDataInAttribute(0, vertices, 3);
         storeFloatDataInAttribute(1, texCoords, 2);
         int iboID = storeIntDataInIndices(indices);
-        return new TexturedModel(new Model(new Mesh(vertices, indices), vaoID, iboID), texture, texCoords);
+        return new TexturedModel(new Model(new Mesh(vertices, indices, texCoords), vaoID, iboID), texture);
+    }
+
+    public static TexturedModel loadModelFromFile(String filePath, Texture texture) {
+        AIScene scene = Assimp.aiImportFile(filePath, Assimp.aiProcess_Triangulate);
+        PointerBuffer buffer = scene.mMeshes();
+        ArrayList<Float> vertices = new ArrayList<>();
+        ArrayList<Integer> indices = new ArrayList<>();
+        ArrayList<Float> textureCoords = new ArrayList<>();
+        for(int i = 0; i < buffer.limit(); i++) {
+            AIMesh mesh = AIMesh.create(buffer.get(i));
+            processMesh(mesh, vertices, indices, textureCoords);
+        }
+        float[] vertc = new float[vertices.size()];
+        for(int i = 0; i < vertc.length; i++) {
+            vertc[i] = vertices.get(i);
+        }
+        int[] indc = new int[indices.size()];
+        for(int i = 0; i < indc.length; i++) {
+            indc[i] = indices.get(i);
+        }
+        float[] textc = new float[textureCoords.size()];
+        for(int i = 0; i < textc.length; i++) {
+            textc[i] = textureCoords.get(i);
+        }
+        return createModel(texture, vertc, indc, textc);
+    }
+
+    private static void processMesh(AIMesh mesh, ArrayList<Float> vertices, ArrayList<Integer> indices, ArrayList<Float> textureCoords) {
+        AIVector3D.Buffer vectors = mesh.mVertices();
+        for(int i = 0; i < vectors.limit(); i++) {
+            AIVector3D vector = vectors.get(i);
+            vertices.add(vector.x());
+            vertices.add(vector.y());
+            vertices.add(vector.z());
+        }
+
+        AIFace.Buffer ind = mesh.mFaces();
+        for(int i = 0; i < mesh.mNumFaces(); i++) {
+            for(int j = 0; j < mesh.mFaces().mNumIndices(); j++) {
+                indices.add(mesh.mFaces().get(i).mIndices().get(j));
+            }
+        }
+
+        AIVector3D.Buffer textures = mesh.mTextureCoords(0);
+        for(int i = 0; i < textures.limit(); i++) {
+            AIVector3D texture = textures.get(i);
+            textureCoords.add(texture.x());
+            textureCoords.add(texture.y());
+        }
     }
 
     private static void storeFloatDataInAttribute(int slot, float[] vertices, int vertexSize) {

@@ -4,10 +4,12 @@ public class Mesh {
 
     private float[] vertices;
     private int[] indices;
+    private float[] textureCoords;
 
-    public Mesh(float[] vertices, int[] indices) {
+    public Mesh(float[] vertices, int[] indices, float[] textureCoords) {
         this.vertices = vertices;
         this.indices = indices;
+        this.textureCoords = textureCoords;
     }
 
     public float[] getVertices() {
@@ -16,5 +18,9 @@ public class Mesh {
 
     public int[] getIndices() {
         return indices;
+    }
+
+    public float[] getTextureCoords() {
+        return textureCoords;
     }
 }

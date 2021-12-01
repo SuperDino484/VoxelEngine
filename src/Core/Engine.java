@@ -93,6 +93,8 @@ public class Engine {
 
         Texture texture = new Texture("resources/textures/cube_texture.png", 0);
         Texture texture2 = new Texture("resources/textures/player_texture.png", 0);
+        Texture palette = new Texture("resources/textures/ColorPalette.png", 0);
+        TexturedModel sphere = Loader.loadModelFromFile("resources/Cone.obj", palette);
         TexturedModel cube = Loader.createModel(texture, Maths.cubePositions, Maths.cubeIndices, Maths.cubeTextureCoords);
         TexturedModel cube2 = Loader.createModel(texture2, Maths.cubePositions, Maths.cubeIndices, Maths.cubeTextureCoords);
         ArrayList<Entity> entities = new ArrayList<>();
@@ -100,7 +102,7 @@ public class Engine {
             entities.add(new Entity(new Vector3f(i, 0, 0), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1), cube));
         }
 
-        player = new Player(camera, 100, 100, new Vector3f(0, 0.65f, 0), new Vector3f(0, 0, 0), new Vector3f(0.25f, 0.25f, 0.25f), cube2);
+        player = new Player(camera, 100, 100, new Vector3f(0, 0.65f, 0), new Vector3f(0, 0, 0), new Vector3f(0.25f, 0.25f, 0.25f), sphere);
 
         while(!glfwWindowShouldClose(window.getWindowHandle())) {
             // Calculate delta time and steps
